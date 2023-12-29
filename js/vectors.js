@@ -1,3 +1,8 @@
+/**
+ * Vectors library. Points and vectors
+ * Version: 1.0.0
+ */
+
 class Point {
     x = 0;
     y = 0;
@@ -343,7 +348,9 @@ class Vector {
         return (vectorA.angle() === this.angle());
     }
 
-
+    isNaN = () => {
+        return this.start.equals(this.end);
+    }
 
     toString = () => {
         return `{start: ${this.start.toString()}, end: ${this.end.toString()}}`;
@@ -502,6 +509,21 @@ class VectorPath {
             this.Points.push(item.end);
         } else if (item instanceof Point) {
             this.Points.push(item);
+        }
+    }
+}
+
+class Polygon {
+    edges = [];
+
+    constructor(pointsArray) {
+        if (!(pointsArray instanceof Array)) {
+            return;
+        }
+        for (let i = 0; i < pointsArray.length; i++) {
+            if (pointsArray[i] instanceof Point) {
+                this.edges.push(pointsArray[i]);
+            }
         }
     }
 }

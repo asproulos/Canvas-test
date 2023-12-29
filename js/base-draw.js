@@ -1,46 +1,20 @@
-/** @type {Array<Vector>} */
-let drawElements = [];
-/** @type {Array<Vector>} */
-let rays = [];
-let drawRays = false;
-let moveOnPath = false;
-const rayCount = 100;
-const rayLength = 20;
-const angle = (2 * Math.PI) / rayCount;
-let stopMove = false;
+const pullStrength = 1;
+const friction = 0.2;
 
-// const gravity = new Vector(new Point(0, 0), new Point(0, 1));
-// const gravityStrength = 1;
-// gravity.setLength(gravityStrength);
-let move = new Vector(new Point(0, 0), new Point(1, 0));
-// const horizontalSpeed = 10;
-// move.setLength(horizontalSpeed);
+window.silentErrors = true;
+/** @type {Array<Vector>} */
+let stopMove = false;
+let move = new Vector(new Point(0, 0), new Point(1, 1));
 
 function init() {
-    for (let i = 0; i < 10; i++) {
-        drawElements.push(new Vector(
-            new Point(getRandomInt(window.innerWidth), getRandomInt(window.innerHeight)),
-            new Point(getRandomInt(window.innerWidth), getRandomInt(window.innerHeight))
-        ));
-    }
 
-    for (let i = 0; i < rayCount; i++) {
-        rays.push(new Vector(new Point(0, 0), new Point(0, 1)));
-    }
-
-    for (let i = 0; i < rays.length; i++) {
-        rays[i].setAngle(i * angle);
-        rays[i].setLength(rayLength);
-    }
 }
 
 /**
  * @param {CanvasRenderingContext2D} context 
  */
 function background(context) {
-    drawElements.forEach(function (vector) {
-        vector.draw(context);
-    });
+
 }
 
 /**
@@ -53,16 +27,25 @@ function draw(context, mousePos) {
     context.lineWidth = 20;
     position.draw(context);
 
+    let copy = move.copy();
+    if (copy.length()) {
+        copy.moveStartTo(position);
+        copy.setLength(copy.length() * 2);
+        context.lineWidth = 2;
+        copy.draw(context);
+    }
+
+    let vectorToMousePos = new Vector(position, mousePos);
+    if (move.length() < friction && vectorToMousePos.length() < 0.6) {
+        return;
+    }
 
     if (stopMove) return;
     move.moveStartTo(position);
-    // move.add(gravity);
-    const pullStrength = 3;
-    const friction = 1;
-    let vectorToMousePos = new Vector(position, mousePos);
     if (vectorToMousePos.length() !== 0) {
         vectorToMousePos.setLength(pullStrength);
         move.add(vectorToMousePos);
+        console.log(move)
     }
     move.setLength(move.length() - friction);
 }
@@ -79,12 +62,4 @@ function click(point) {
  */
 function rightClick(point) {
 
-}
-
-/**
- * @param {number} max 
- * @returns {number}
- */
-function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
 }
